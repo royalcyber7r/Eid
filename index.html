@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Eid Banner | DP Maker</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.poster-box {
+    position: relative;
+    width: 390px;
+    height: 575px;
+    margin: auto;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    text-align: center;
+}
+
+.preview-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform-origin: center center;
+    display: none;
+}
+
+#frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.text-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 70px;
+    width: 100%;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.2;
+    top: 505px;
+}
+
+/* নাম বড় */
+#overlayName {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.control-box input {
+    margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container d-flex justify-content-center mt-5">
+<div class="card p-3 shadow" style="width:500px;">
+<h4 class="text-center text-primary">Eid Banner</h4>
+
+<p class="text-center small text-muted">
+Mozilla/Chrome/Safari ব্রাউজারে ওপেন করুন। ছবি আপলোড করুন। প্রয়োজন অনুযায়ী জুম এবং সরান। পরে নিচের ডাউনলোড বাটন চাপুন।
+</p>
+
+<div class="poster-box mb-3" id="posterBox">
+    <span id="defaultText">Upload your photo</span>
+    <img id="preview" class="preview-img" alt="User Photo">
+    <img src="banner-bg.PNG" id="frame" alt="Frame">
+
+    <div class="text-overlay" id="textOverlay">
+        <div id="overlayName">নাম</div>
+        <div id="overlayRole">পদবী</div>
+        <div id="overlayAddress">ঠিকানা</div>
+    </div>
+</div>
+
+<div class="bg-light p-3 rounded mb-3 control-box">
+    <label class="form-label">জুম ইন/আউট <span id="zoomVal">1x</span></label>
+    <input type="range" min="0.15" max="2" step="0.01" value="1" class="form-range" id="zoomRange">
+
+    <label class="form-label mt-2">ডান-বাম সরান</label>
+    <input type="range" min="-100" max="100" value="0" class="form-range" id="xRange">
+
+    <label class="form-label mt-2">উপর-নিচ সরান</label>
+    <input type="range" min="-100" max="100" value="0" class="form-range" id="yRange">
+</div>
+
+<div class="bg-light p-3 rounded mb-3">
+    <input type="text" id="userName" class="form-control mb-2" placeholder="নাম" oninput="updateText()">
+    <input type="text" id="userRole" class="form-control mb-2" placeholder="পদবী" oninput="updateText()">
+    <input type="text" id="userAddress" class="form-control mb-2" placeholder="ঠিকানা" oninput="updateText()">
+</div>
+
+<form>
+    <input type="file" name="photo" class="form-control mb-3" accept="image/*" id="photoInput">
+    <button type="button" class="btn btn-success w-100" onclick="downloadPoster()">ছবি ডাউনলোড করুন</button>
+</form>
+
+</div>
+</div>
+<!-- Footer -->
+<div class="footer mt-4 text-center">
+    <small>
+        © 2026 <b>Eid Banner</b><br>
+        Developed By ❤️<b>Mamun Hossain</b><br>
+        <a href="https://www.facebook.com/royalcyber.7r" target="_blank" class="footer-fb">
+            🌐 Follow us on Facebook
+        </a>
+    </small>
+</div>
+</div>
+</div>
+
+<script>
+const preview = document.getElementById('preview');
+const defaultText = document.getElementById('defaultText');
+const zoomRange = document.getElementById('zoomRange');
+const xRange = document.getElementById('xRange');
+const yRange = document.getElementById('yRange');
+const zoomVal = document.getElementById('zoomVal');
+const photoInput = document.getElementById('photoInput');
+const userName = document.getElementById('userName');
+const userRole = document.getElementById('userRole');
+const userAddress = document.getElementById('userAddress');
+
+photoInput.addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = function(ev){
+            preview.src = ev.target.result;
+            preview.style.display = 'block';
+            defaultText.style.display = 'none';
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+function updateTransform(){
+    const scale = parseFloat(zoomRange.value);
+    const translateX = parseInt(xRange.value);
+    const translateY = parseInt(yRange.value);
+    zoomVal.textContent = scale.toFixed(2)+'x';
+    preview.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+function updateText(){
+    document.getElementById('overlayName').textContent = userName.value || 'নাম';
+    document.getElementById('overlayRole').textContent = userRole.value || 'পদবী';
+    document.getElementById('overlayAddress').textContent = userAddress.value || 'ঠিকানা';
+}
+
+zoomRange.addEventListener('input', updateTransform);
+xRange.addEventListener('input', updateTransform);
+yRange.addEventListener('input', updateTransform);
+
+function downloadPoster(){
+    const canvas = document.createElement('canvas');
+    canvas.width = 390;
+    canvas.height = 575;
+    const ctx = canvas.getContext('2d');
+
+    // User photo
+    if(preview.src){
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = preview.src;
+        img.onload = function(){
+            const scale = parseFloat(zoomRange.value);
+            const translateX = parseInt(xRange.value);
+            const translateY = parseInt(yRange.value);
+
+            ctx.save();
+            ctx.translate(canvas.width/2 + translateX, canvas.height/2 + translateY);
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+            ctx.restore();
+
+            drawFrameAndText();
+        }
+    } else {
+        drawFrameAndText();
+    }
+
+    function drawFrameAndText(){
+        const frameImg = new Image();
+        frameImg.crossOrigin = "anonymous";
+        frameImg.src = "banner-bg.PNG";
+        frameImg.onload = function(){
+            ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+
+            const name = userName.value || 'নাম';
+            const role = userRole.value || 'পদবী';
+            const address = userAddress.value || 'ঠিকানা';
+
+            ctx.textAlign = 'left'; // বাম থেকে লেখা শুরু হবে
+            ctx.fillText(name, 70, 505); // 70px left
+            ctx.fillText(role, 70, 505 + 28 + 4); 
+            ctx.fillText(address, 70, 505 + 28 + 4 + 16 + 2);
+
+            ctx.font = '16px Arial';
+            ctx.fillText(role, 70, 505 + 28 + 4); // name নিচে gap
+            ctx.fillText(address, 70, 505 + 28 + 4 + 16 + 2); // role নিচে gap
+
+            const link = document.createElement('a');
+            link.download = 'eid_banner.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    }
+}
+</script>
+
+</body>
+</html>

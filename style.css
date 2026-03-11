@@ -1,0 +1,42 @@
+body {
+    font-family: Arial;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 40px;
+    text-align: center;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+}
+
+.form-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px #ddd;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid #888;
+    border-radius: 5px;
+}
+
+button {
+    background: green;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+canvas {
+    margin-top: 20px;
+    border: 3px solid #ddd;
+    display: none;
+}
